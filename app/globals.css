@@ -1,26 +1,184 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #0b1f3a;
+  --secondary: #800000;
+  --ternary: #8d4201;
+  --hover: #556b2f;
+  --white: #ffffff;
+  --surface: #f7f8fb;
+  --muted: #5a6b82;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-ternary: var(--ternary);
+  --color-hover: var(--hover);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+
+  body {
+    background: var(--white);
+    color: var(--primary);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--ternary) 35%, transparent);
+    color: var(--primary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .section-full {
+    min-height: 100dvh;
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .text-clamp-hero {
+    font-size: clamp(2.75rem, 10vw + 0.5rem, 7.5rem);
+    letter-spacing: clamp(0.12em, 0.4vw, 0.28em);
+  }
+
+  .text-clamp-h2 {
+    font-size: clamp(1.75rem, 3.5vw + 0.5rem, 3rem);
+  }
+
+  .text-clamp-h3 {
+    font-size: clamp(1.125rem, 1.8vw + 0.4rem, 1.5rem);
+  }
+
+  .text-clamp-body {
+    font-size: clamp(0.9375rem, 1.1vw + 0.35rem, 1.125rem);
+    line-height: 1.75;
+  }
+
+  .text-clamp-small {
+    font-size: clamp(0.8125rem, 0.85vw + 0.3rem, 0.9375rem);
+  }
+
+  .pad-section {
+    padding: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  .gap-section {
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .bg-dots {
+    background-color: var(--primary);
+    background-image: radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--white) 14%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: clamp(18px, 2.2vw, 28px) clamp(18px, 2.2vw, 28px);
+  }
+
+  .bg-lines {
+    background-color: var(--surface);
+    background-image: linear-gradient(
+        color-mix(in srgb, var(--primary) 6%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--primary) 6%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: clamp(32px, 5vw, 56px) clamp(32px, 5vw, 56px);
+  }
+
+  .bg-dots-light {
+    background-color: var(--white);
+    background-image: radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--primary) 10%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 24px);
+  }
+
+  .bg-diagonal {
+    background-color: var(--primary);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent clamp(12px, 1.5vw, 18px),
+      color-mix(in srgb, var(--white) 4%, transparent) clamp(12px, 1.5vw, 18px),
+      color-mix(in srgb, var(--white) 4%, transparent) clamp(24px, 3vw, 36px)
+    );
+  }
+
+  .logo-shadow {
+    text-shadow:
+      0 0 clamp(20px, 4vw, 48px) color-mix(in srgb, var(--ternary) 55%, transparent),
+      0 clamp(4px, 0.8vw, 12px) clamp(12px, 2vw, 28px)
+        color-mix(in srgb, var(--secondary) 45%, transparent),
+      0 clamp(2px, 0.4vw, 6px) 0 color-mix(in srgb, var(--white) 25%, transparent);
+  }
+
+  .card-premium {
+    border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+    box-shadow:
+      0 clamp(8px, 1.5vw, 20px) clamp(24px, 4vw, 48px)
+        color-mix(in srgb, var(--primary) 8%, transparent),
+      0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) inset;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-fade-up-delay {
+    animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  }
+
+  .animate-fade-up-delay-2 {
+    animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(clamp(12px, 2vh, 24px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-up,
+  .animate-fade-up-delay,
+  .animate-fade-up-delay-2 {
+    animation: none;
+  }
 }
