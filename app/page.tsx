@@ -1,21 +1,25 @@
-import { ContactSection } from "@/components/ContactSection";
+import { CustomerExperiencesSection } from "@/components/CustomerExperiencesSection";
 import { DesktopHeader } from "@/components/DesktopHeader";
+import { DevelopmentProcessSection } from "@/components/DevelopmentProcessSection";
 import { HeroSection } from "@/components/HeroSection";
+import { KedantraFooter } from "@/components/KedantraFooter";
 import { MobileNav } from "@/components/MobileNav";
 import { ProjectsSection } from "@/components/ProjectsSection";
-import { SectionNav } from "@/components/SectionNav";
 import { VisionMissionSection } from "@/components/VisionMissionSection";
 
 export default function Home() {
   return (
-    <main className="relative">
+    <main className="relative min-h-screen bg-black overflow-x-hidden">
       <DesktopHeader />
       <MobileNav />
-      <SectionNav />
-      <HeroSection />
-      <VisionMissionSection />
-      <ProjectsSection />
-      <ContactSection />
+      <div className="relative z-10">
+        <HeroSection />
+        <VisionMissionSection />
+        <ProjectsSection />
+        <DevelopmentProcessSection />
+        <CustomerExperiencesSection />
+        <KedantraFooter />
+      </div>
     </main>
   );
 }

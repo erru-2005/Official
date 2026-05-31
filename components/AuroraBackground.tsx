@@ -1,21 +1,17 @@
 "use client";
 
 import React, { Suspense, lazy } from "react";
-import { SparklesText } from "@/components/ui/sparkles-text";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Lazy load the Spline viewer to prevent blocking the initial SSR load
 const Spline = lazy(() => import("@splinetool/react-spline"));
 
-export function HeroSection() {
+export function AuroraBackground() {
   const isMobile = useIsMobile();
 
   return (
-    <section
-      id="home"
-      className="section-full relative flex flex-col items-center justify-center overflow-hidden bg-black pointer-events-none"
-    >
-      {/* 3D Spline Galaxy Background Container (Skipped on mobile to prevent WebGL GPU lag) */}
+    <div className="absolute inset-x-0 top-0 h-[100vh] w-full z-0 overflow-hidden bg-black pointer-events-none">
+      {/* 3D Spline Galaxy Container (Skipped on mobile to prevent GPU performance choke) */}
       {isMobile ? (
         <div
           className="absolute inset-0 z-0 bg-black"
@@ -24,15 +20,12 @@ export function HeroSection() {
           }}
         />
       ) : (
-        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden">
+        <div className="absolute inset-0 w-full h-full pointer-events-auto">
           <Suspense fallback={<div className="w-full h-full bg-black" />}>
             <Spline
               style={{
-                width: "calc(100% + 160px)",
-                height: "calc(100% + 100px)",
-                position: "absolute",
-                right: "-80px",
-                bottom: "-50px",
+                width: "100%",
+                height: "100%",
               }}
               scene="https://prod.spline.design/us3ALejTXl6usHZ7/scene.splinecode"
             />
@@ -40,7 +33,7 @@ export function HeroSection() {
         </div>
       )}
 
-      {/* Side and Bottom Vignette overlays to blend particles into the matte black layout */}
+      {/* Side and Bottom Vignette overlays to blend the 3D particles into our matte black pages */}
       <div
         className="absolute inset-0 pointer-events-none z-10"
         style={{
@@ -50,12 +43,6 @@ export function HeroSection() {
           `,
         }}
       />
-
-      {/* Hero Foreground Content */}
-      <div className="relative z-20 flex flex-col items-center text-center pointer-events-none select-none">
-        <SparklesText text="KEDANTRA" />
-        <h1 className="sr-only">KEDANTRA</h1>
-      </div>
-    </section>
+    </div>
   );
 }

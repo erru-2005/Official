@@ -62,3 +62,30 @@ Restart `npm run dev` after changing env vars.
 ## Verify inserts
 
 After submitting the form on the site, open **Table Editor** → `contact_inquiries` and confirm a row with `inquiry_type`, `name`, `message`, and `status = new`.
+
+---
+
+## Table: `public.customer_experiences`
+
+Run migration: `supabase/migrations/20260528120000_create_customer_experiences.sql`
+
+| Column         | Type        | Notes                          |
+|----------------|-------------|--------------------------------|
+| `id`           | `uuid`      | Primary key                    |
+| `quote`        | `text`      | 10–2000 chars                  |
+| `author`       | `text`      | 2–120 chars                    |
+| `role`         | `text`      | Optional                       |
+| `company`      | `text`      | Optional                       |
+| `image_url`    | `text`      | Optional https URL             |
+| `is_published` | `boolean`   | Default `true`                 |
+| `source`       | `text`      | Default `website`              |
+| `created_at`   | `timestamptz` | Auto                         |
+
+### RLS
+
+| Policy                              | Action | Rule                    |
+|-------------------------------------|--------|-------------------------|
+| `customer_experiences_select_public`  | SELECT | `is_published = true`   |
+| `customer_experiences_insert_anon`    | INSERT | published + `website`   |
+
+The **Customer Experiences** section on the site reads via `GET /api/customer-experiences` and inserts via `POST /api/customer-experiences`.

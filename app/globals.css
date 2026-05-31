@@ -6,8 +6,26 @@
   --ternary: #8d4201;
   --hover: #556b2f;
   --white: #ffffff;
-  --surface: #f7f8fb;
-  --muted: #5a6b82;
+  --surface: #0a0a0a;
+  --muted: #9ca3af;
+
+  --background: #000000;
+  --foreground: #f5f5f5;
+  --card: #0f0f0f;
+  --card-foreground: #f5f5f5;
+  --popover: #0f0f0f;
+  --popover-foreground: #f5f5f5;
+  --primary-foreground: #ffffff;
+  --secondary-foreground: #ffffff;
+  --muted-foreground: #a1a1aa;
+  --accent: #1a1a1a;
+  --accent-foreground: #f5f5f5;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #fef2f2;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(255, 255, 255, 0.25);
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -17,30 +35,63 @@
   --color-hover: var(--hover);
   --color-surface: var(--surface);
   --color-muted: var(--muted);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-signika: var(--font-signika), var(--font-heading);
+  --font-dm-sans: var(--font-dm-sans), var(--font-body);
+  --font-tech: var(--font-share-tech-mono), monospace;
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
+    scroll-behavior: auto;
   }
 
   body {
-    background: var(--white);
-    color: var(--primary);
+    background: var(--background);
+    color: var(--foreground);
     font-family: var(--font-body);
     overflow-x: hidden;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--ternary) 35%, transparent);
-    color: var(--primary);
+    background: color-mix(in srgb, #c8ced6 35%, transparent);
+    color: var(--foreground);
   }
 }
 
 @layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
   .font-heading {
     font-family: var(--font-heading);
   }
@@ -49,11 +100,21 @@
     font-family: var(--font-body);
   }
 
+  .font-signika {
+    font-family: var(--font-signika);
+  }
+
+  .font-dm-sans {
+    font-family: var(--font-dm-sans);
+  }
+
+  .font-tech {
+    font-family: var(--font-tech);
+  }
+
   .section-full {
     min-height: 100dvh;
     min-height: 100vh;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
   }
 
   .text-clamp-hero {
@@ -87,41 +148,41 @@
   }
 
   .bg-dots {
-    background-color: var(--primary);
+    background-color: transparent;
     background-image: radial-gradient(
       circle at center,
-      color-mix(in srgb, var(--white) 14%, transparent) 1px,
+      color-mix(in srgb, var(--white) 10%, transparent) 1px,
       transparent 1px
     );
     background-size: clamp(18px, 2.2vw, 28px) clamp(18px, 2.2vw, 28px);
   }
 
   .bg-lines {
-    background-color: var(--surface);
+    background-color: transparent;
     background-image: linear-gradient(
-        color-mix(in srgb, var(--primary) 6%, transparent) 1px,
+        color-mix(in srgb, var(--white) 6%, transparent) 1px,
         transparent 1px
       ),
       linear-gradient(
         90deg,
-        color-mix(in srgb, var(--primary) 6%, transparent) 1px,
+        color-mix(in srgb, var(--white) 6%, transparent) 1px,
         transparent 1px
       );
     background-size: clamp(32px, 5vw, 56px) clamp(32px, 5vw, 56px);
   }
 
   .bg-dots-light {
-    background-color: var(--white);
+    background-color: transparent;
     background-image: radial-gradient(
       circle at center,
-      color-mix(in srgb, var(--primary) 10%, transparent) 1px,
+      color-mix(in srgb, var(--white) 8%, transparent) 1px,
       transparent 1px
     );
     background-size: clamp(16px, 2vw, 24px) clamp(16px, 2vw, 24px);
   }
 
   .bg-diagonal {
-    background-color: var(--primary);
+    background-color: transparent;
     background-image: repeating-linear-gradient(
       -45deg,
       transparent,
@@ -132,19 +193,22 @@
   }
 
   .logo-shadow {
-    text-shadow:
-      0 0 clamp(20px, 4vw, 48px) color-mix(in srgb, var(--ternary) 55%, transparent),
-      0 clamp(4px, 0.8vw, 12px) clamp(12px, 2vw, 28px)
-        color-mix(in srgb, var(--secondary) 45%, transparent),
-      0 clamp(2px, 0.4vw, 6px) 0 color-mix(in srgb, var(--white) 25%, transparent);
+    filter: drop-shadow(
+        0 0 clamp(16px, 3vw, 40px) color-mix(in srgb, #c8ced6 70%, transparent)
+      )
+      drop-shadow(0 clamp(4px, 0.8vw, 10px) clamp(14px, 2vw, 24px) rgb(0 0 0 / 35%))
+      drop-shadow(0 clamp(1px, 0.3vw, 4px) 0 rgb(255 255 255 / 35%));
   }
 
   .card-premium {
-    border: 1px solid color-mix(in srgb, var(--primary) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--white) 12%, transparent);
     box-shadow:
-      0 clamp(8px, 1.5vw, 20px) clamp(24px, 4vw, 48px)
-        color-mix(in srgb, var(--primary) 8%, transparent),
-      0 1px 0 color-mix(in srgb, var(--white) 80%, transparent) inset;
+      0 clamp(8px, 1.5vw, 20px) clamp(24px, 4vw, 48px) rgb(0 0 0 / 45%),
+      0 1px 0 color-mix(in srgb, var(--white) 8%, transparent) inset;
+  }
+
+  .card-dark {
+    background-color: color-mix(in srgb, var(--white) 4%, #0a0a0a);
   }
 
   .animate-fade-up {

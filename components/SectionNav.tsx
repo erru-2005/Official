@@ -4,7 +4,7 @@ const sections = [
   { id: "home", label: "Home" },
   { id: "vision", label: "Vision" },
   { id: "projects", label: "Projects" },
-  { id: "contact", label: "Contact" },
+  { id: "contact", label: "Experiences" },
 ] as const;
 
 export function SectionNav() {

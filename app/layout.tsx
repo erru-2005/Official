@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Share_Tech_Mono } from "next/font/google";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -15,10 +16,17 @@ const inter = Inter({
   display: "swap",
 });
 
+const shareTechMono = Share_Tech_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-share-tech-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "KEDANTRA — AI-Driven Digital Systems",
+  title: "KEDANTRA ",
   description:
-    "Advanced, secure, and intelligent digital systems powered by next-generation AI and autonomous technologies.",
+    "Advanced, secure, and intelligent digital systems Built for the future.",
 };
 
 export default function RootLayout({
@@ -29,9 +37,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${inter.variable} scroll-smooth`}
+      className={`${poppins.variable} ${inter.variable} ${shareTechMono.variable}`}
     >
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body bg-black text-white antialiased">
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }
