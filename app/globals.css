@@ -8,6 +8,9 @@
   --white: #ffffff;
   --surface: #0a0a0a;
   --muted: #9ca3af;
+  --color-kedantra-navy: #0c1829;
+  --color-kedantra-gold: #b08d57;
+  --color-kedantra-cream: #f3f0eb;
 
   --background: #000000;
   --foreground: #f5f5f5;
@@ -52,10 +55,15 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-logo: var(--font-cinzel), ui-serif, Georgia, "Times New Roman", serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-kedantra-navy: #0c1829;
+  --color-kedantra-gold: #b08d57;
+  --color-kedantra-cream: #f3f0eb;
   --font-signika: var(--font-signika), var(--font-heading);
   --font-dm-sans: var(--font-dm-sans), var(--font-body);
   --font-tech: var(--font-share-tech-mono), monospace;
+  --font-black-ops: var(--font-black-ops), var(--font-tech), monospace;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -64,6 +72,11 @@
 @layer base {
   html {
     scroll-behavior: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   body {
@@ -96,8 +109,30 @@
     font-family: var(--font-heading);
   }
 
+  .font-logo {
+    font-family: var(--font-logo);
+  }
+
   .font-body {
     font-family: var(--font-body);
+  }
+
+  .text-kedantra-navy {
+    color: var(--color-kedantra-navy);
+  }
+
+  .text-kedantra-gold {
+    color: var(--color-kedantra-gold);
+  }
+
+  .text-clamp-logo {
+    font-size: clamp(2.5rem, 8vw + 0.5rem, 6.5rem);
+    letter-spacing: clamp(0.08em, 0.2vw + 0.05em, 0.14em);
+  }
+
+  .text-clamp-logo-compact {
+    font-size: clamp(0.9375rem, 1.4vw + 0.35rem, 1.125rem);
+    letter-spacing: clamp(0.08em, 0.15vw + 0.05em, 0.14em);
   }
 
   .font-signika {
@@ -112,31 +147,35 @@
     font-family: var(--font-tech);
   }
 
+  .font-black-ops {
+    font-family: var(--font-black-ops);
+  }
+
   .section-full {
     min-height: 100dvh;
     min-height: 100vh;
   }
 
   .text-clamp-hero {
-    font-size: clamp(2.75rem, 10vw + 0.5rem, 7.5rem);
+    font-size: clamp(3rem, 10vw + 0.5rem, 7.5rem);
     letter-spacing: clamp(0.12em, 0.4vw, 0.28em);
   }
 
   .text-clamp-h2 {
-    font-size: clamp(1.75rem, 3.5vw + 0.5rem, 3rem);
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 3rem);
   }
 
   .text-clamp-h3 {
-    font-size: clamp(1.125rem, 1.8vw + 0.4rem, 1.5rem);
+    font-size: clamp(1.25rem, 1.8vw + 0.4rem, 1.5rem);
   }
 
   .text-clamp-body {
-    font-size: clamp(0.9375rem, 1.1vw + 0.35rem, 1.125rem);
+    font-size: clamp(1rem, 1.1vw + 0.35rem, 1.125rem);
     line-height: 1.75;
   }
 
   .text-clamp-small {
-    font-size: clamp(0.8125rem, 0.85vw + 0.3rem, 0.9375rem);
+    font-size: clamp(0.875rem, 0.85vw + 0.3rem, 0.9375rem);
   }
 
   .pad-section {
@@ -222,6 +261,38 @@
   .animate-fade-up-delay-2 {
     animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
   }
+
+  .shine-text {
+    background: linear-gradient(
+      90deg,
+      #c0c0c0 0%,
+      #c0c0c0 30%,
+      #ffffff 50%,
+      #c0c0c0 70%,
+      #c0c0c0 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: shine 4s ease-in-out infinite;
+  }
+
+  .shine-text-gold {
+    background: linear-gradient(
+      90deg,
+      #b08d57 0%,
+      #b08d57 30%,
+      #f5d99b 50%,
+      #b08d57 70%,
+      #b08d57 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    animation: shine 4s ease-in-out infinite;
+  }
 }
 
 @keyframes fade-up {
@@ -235,6 +306,43 @@
   }
 }
 
+@keyframes shine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Dialog animations ──────────────────────────────────────────── */
+@keyframes dialog-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes dialog-overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+/* lg+ centered card */
+@keyframes dialog-content-in {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+@keyframes dialog-content-out {
+  from { opacity: 1; transform: scale(1)    translateY(0);   }
+  to   { opacity: 0; transform: scale(0.96) translateY(6px); }
+}
+/* < lg bottom sheet */
+@keyframes dialog-sheet-in {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes dialog-sheet-out {
+  from { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 0; transform: translateY(100%); }
+}
+
+/* Scroll lock is handled via JS inline styles (position:fixed technique)
+   in CustomerExperiencesSection — more reliable than overflow:hidden alone
+   when body already has overflow-x:hidden set. */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -244,5 +352,12 @@
   .animate-fade-up-delay,
   .animate-fade-up-delay-2 {
     animation: none;
+  }
+
+  [data-state=open] {
+    animation: none !important;
+  }
+  [data-state=closed] {
+    animation: none !important;
   }
 }

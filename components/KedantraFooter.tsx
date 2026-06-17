@@ -917,19 +917,26 @@ export function KedantraFooter() {
       <div className="relative mx-auto w-full max-w-[clamp(20rem,92vw,76rem)] px-6 sm:px-12 lg:px-16 pt-14 pb-5 sm:pt-20 sm:pb-6 lg:pt-40 lg:pb-12 flex flex-col md:flex-row justify-between items-center md:items-center gap-12 md:gap-16">
 
         {/* Left Section: Bucket animation aligned left */}
-        <div className="w-full max-w-[655px] md:w-[655px] shrink-0 flex flex-col items-center gap-6">
-          <h3 className="font-tech text-[11px] sm:text-xs tracking-[0.25em] text-white/40 uppercase select-none text-center">
+        <div className="w-full max-w-[655px] md:w-[655px] shrink-0 flex flex-col items-center gap-2">
+          <h3
+            className="font-black-ops text-[clamp(0.875rem,3.5vw,2.75rem)] tracking-[0.18em] text-white/40 uppercase select-none text-center leading-tight"
+            style={{
+              textShadow: [
+                "0 0 8px rgba(255,255,255,0.55)",   /* tight bright core */
+                "0 0 20px rgba(255,255,255,0.30)",  /* mid glow */
+                "0 0 55px rgba(255,255,255,0.15)",  /* wide soft halo */
+                "0 2px 4px rgba(0,0,0,0.8)",        /* ground shadow for depth */
+              ].join(", "),
+            }}
+          >
             OUR PRODUCT CONTAINS:
           </h3>
           <Bucket />
         </div>
 
         {/* Right Section: Social links list styled precisely like the second image */}
-        <div className="flex flex-col items-center md:items-start text-left mt-8 md:mt-0 self-center md:self-center shrink-0">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-5 select-none hidden md:block">
-            Social Links
-          </h3>
-          <ul className="flex flex-row md:flex-col gap-3 md:gap-0 md:space-y-4 w-full justify-center md:justify-start items-center md:items-start">
+        <div className="flex flex-col items-center md:items-start text-left mt-8 md:mt-0 self-center md:self-center shrink-0 md:ml-4">
+          <ul className="flex flex-row md:flex-col gap-4 md:gap-0 md:space-y-5 w-full justify-center md:justify-start items-center md:items-start">
             {socialLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -938,12 +945,12 @@ export function KedantraFooter() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`group flex items-center gap-3 text-base text-white/50 transition-all duration-300 ${link.hoverText}`}
+                    className={`group flex items-center gap-3 text-base text-white transition-all duration-300 ${link.hoverText}`}
                   >
-                    <span className={`p-2.5 rounded-lg border border-white/[0.04] bg-[#0d0d0d] text-white/40 transition-all duration-300 ${link.hoverIconBg}`}>
-                      <Icon className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                    <span className={`p-3 rounded-lg border border-white/[0.06] bg-[#0d0d0d] text-white transition-all duration-300 ${link.hoverIconBg}`}>
+                      <Icon className="w-6 h-6" strokeWidth={1.5} />
                     </span>
-                    <span className="font-medium tracking-normal transition-colors duration-300 hidden md:block">
+                    <span className="font-medium tracking-normal transition-colors duration-300 hidden md:block text-white">
                       {link.title}
                     </span>
                   </a>

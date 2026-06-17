@@ -1,61 +1,15 @@
 "use client";
 
-import React, { Suspense, lazy } from "react";
-import { SparklesText } from "@/components/ui/sparkles-text";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-// Lazy load the Spline viewer to prevent blocking the initial SSR load
-const Spline = lazy(() => import("@splinetool/react-spline"));
+import { PixelHero } from "@/components/PixelHero";
 
 export function HeroSection() {
-  const isMobile = useIsMobile();
-
   return (
-    <section
-      id="home"
-      className="section-full relative flex flex-col items-center justify-center overflow-hidden bg-black pointer-events-none"
-    >
-      {/* 3D Spline Galaxy Background Container (Skipped on mobile to prevent WebGL GPU lag) */}
-      {isMobile ? (
-        <div
-          className="absolute inset-0 z-0 bg-black"
-          style={{
-            backgroundImage: "radial-gradient(circle at 50% 50%, rgba(141, 66, 1, 0.12), rgba(128, 0, 0, 0.08), rgba(0, 0, 0, 1))",
-          }}
-        />
-      ) : (
-        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden">
-          <Suspense fallback={<div className="w-full h-full bg-black" />}>
-            <Spline
-              style={{
-                width: "calc(100% + 160px)",
-                height: "calc(100% + 100px)",
-                position: "absolute",
-                right: "-80px",
-                bottom: "-50px",
-              }}
-              scene="https://prod.spline.design/us3ALejTXl6usHZ7/scene.splinecode"
-            />
-          </Suspense>
-        </div>
-      )}
-
-      {/* Side and Bottom Vignette overlays to blend particles into the matte black layout */}
-      <div
-        className="absolute inset-0 pointer-events-none z-10"
-        style={{
-          background: `
-            linear-gradient(to right, rgba(0, 0, 0, 0.85), transparent 25%, transparent 75%, rgba(0, 0, 0, 0.85)),
-            linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.95))
-          `,
-        }}
+    <section id="home" className="relative w-full">
+      <PixelHero
+        word1="KEDANTRA"
+        word2=""
+        description="Minimalist interfaces driven by refined motion. Every calculated detail delivers an elevated digital experience."
       />
-
-      {/* Hero Foreground Content */}
-      <div className="relative z-20 flex flex-col items-center text-center pointer-events-none select-none">
-        <SparklesText text="KEDANTRA" />
-        <h1 className="sr-only">KEDANTRA</h1>
-      </div>
     </section>
   );
 }

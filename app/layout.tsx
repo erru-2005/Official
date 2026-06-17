@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Poppins, Share_Tech_Mono } from "next/font/google";
+import { Cinzel, Inter, Poppins, Share_Tech_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
+
+const cinzel = Cinzel({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-cinzel",
+  display: "swap",
+});
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],
@@ -23,6 +31,13 @@ const shareTechMono = Share_Tech_Mono({
   display: "swap",
 });
 
+const blackOpsOne = localFont({
+  src: "../assets/fonts/BlackOpsOne-Regular.ttf",
+  variable: "--font-black-ops",
+  display: "swap",
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "KEDANTRA ",
   description:
@@ -37,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${inter.variable} ${shareTechMono.variable}`}
+      className={`${cinzel.variable} ${poppins.variable} ${inter.variable} ${shareTechMono.variable} ${blackOpsOne.variable}`}
     >
       <body className="font-body bg-black text-white antialiased">
         <SmoothScroll>{children}</SmoothScroll>
