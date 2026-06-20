@@ -138,12 +138,10 @@ export function ProjectsSection() {
           <p className="text-clamp-small mb-2 font-semibold tracking-[0.25em] text-ternary uppercase">
             Portfolio
           </p>
-          <h2 className="font-heading text-clamp-h2 font-bold text-white mb-3">
+          <h2 className="font-heading text-clamp-h4 font-bold text-white mb-3">
             Demo Projects
           </h2>
-          <p className="text-clamp-body mx-auto max-w-xl text-white/60">
-            A glimpse of the secure, scalable, and AI-powered solutions we deliver. Explore our work below.
-          </p>
+          
         </header>
 
         {/* Flipping Cards Horizontal Scroll Row */}

@@ -78,22 +78,19 @@ export function DevelopmentProcessSection() {
   return (
     <section
       id="process"
-      className="section-full bg-transparent relative flex flex-col overflow-hidden"
+      className="section-full bg-transparent relative flex flex-col"
     >
-      <header className="relative z-20 shrink-0 px-[clamp(1.25rem,4vw,3.5rem)] pt-[clamp(5rem,12vh,7rem)] pb-[clamp(0.5rem,2vh,1rem)] text-center">
+      <header className="relative z-20 shrink-0 px-[clamp(1.25rem,4vw,3.5rem)] pt-[clamp(1.5rem,4vh,3rem)] pb-[clamp(0.25rem,1vh,0.75rem)] text-center">
         <p className="text-clamp-small mb-2 font-semibold tracking-[0.25em] text-white/50 uppercase">
           How We Deliver
         </p>
         <h2 className="font-heading text-clamp-h2 font-bold text-white">
           Iterative Development Process
         </h2>
-        <p className="text-clamp-body mx-auto mt-3 max-w-[clamp(18rem,55vw,40rem)] text-white/60">
-          Click any node to explore how we build web and app products — from
-          discovery through launch.
-        </p>
+       
       </header>
 
-      <div className="relative min-h-0 flex-1">
+      <div className="relative min-h-0 flex-1 px-[clamp(0.5rem,2vw,1rem)] pb-[clamp(0.5rem,2vw,1rem)]">
         <RadialOrbitalTimeline timelineData={developmentTimeline} />
       </div>
     </section>
