@@ -14,70 +14,23 @@ export async function GET() {
       .eq("is_published", true)
       .order("created_at", { ascending: false });
 
-    const mockExperiences = [
-      {
-        id: "mock-1",
-        quote: "KEDANTRA delivered our next-gen enterprise dashboard ahead of schedule. The security posture and real-time AI automation exceeded all expectations.",
-        author: "Sarah Chen",
-        role: "Creative Director",
-        company: "Studio Forma",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80",
-      },
-      {
-        id: "mock-2",
-        quote: "The integration of secure, scalable APIs into our banking portal was seamless. Working with KEDANTRA was the best decision we made this year.",
-        author: "Marcus Vance",
-        role: "VP of Engineering",
-        company: "Zenith Digital",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
-      },
-      {
-        id: "mock-3",
-        quote: "Their autonomous agent technology helped us automate over 85% of our customer operations. Exceptional craftsmanship and performance.",
-        author: "Elena Rostova",
-        role: "CEO",
-        company: "NovaSphere",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop&q=80",
-      }
-    ];
-
     if (error) {
-      console.warn("[customer-experiences] Supabase select failed. Falling back to mock testimonials:", error.message);
-      return NextResponse.json({ experiences: mockExperiences });
+      console.error("[customer-experiences] Supabase select failed:", error.message);
+      return NextResponse.json(
+        { error: "Unable to load experiences at this time.", experiences: [] },
+        { status: 503 },
+      );
     }
 
     const experiences = (data ?? []).map(mapRowToCard);
 
     return NextResponse.json({ experiences });
   } catch (err) {
-    console.warn("[customer-experiences] Server error. Falling back to mock testimonials:", err);
-    const mockExperiences = [
-      {
-        id: "mock-1",
-        quote: "KEDANTRA delivered our next-gen enterprise dashboard ahead of schedule. The security posture and real-time AI automation exceeded all expectations.",
-        author: "Sarah Chen",
-        role: "Creative Director",
-        company: "Studio Forma",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80",
-      },
-      {
-        id: "mock-2",
-        quote: "The integration of secure, scalable APIs into our banking portal was seamless. Working with KEDANTRA was the best decision we made this year.",
-        author: "Marcus Vance",
-        role: "VP of Engineering",
-        company: "Zenith Digital",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80",
-      },
-      {
-        id: "mock-3",
-        quote: "Their autonomous agent technology helped us automate over 85% of our customer operations. Exceptional craftsmanship and performance.",
-        author: "Elena Rostova",
-        role: "CEO",
-        company: "NovaSphere",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&auto=format&fit=crop&q=80",
-      }
-    ];
-    return NextResponse.json({ experiences: mockExperiences });
+    console.error("[customer-experiences] Server error:", err);
+    return NextResponse.json(
+      { error: "Server configuration error. Contact support.", experiences: [] },
+      { status: 500 },
+    );
   }
 }
 

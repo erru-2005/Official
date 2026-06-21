@@ -1,20 +1,38 @@
-# Supabase — Contact inquiries
+# KEDANTRA — Supabase Database
 
-## Migrate the database
+## Quick start (SQL Editor)
 
-### Option A: Supabase CLI (recommended)
+1. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project → **SQL Editor**
+2. Open and run **[`run_all_migrations.sql`](./run_all_migrations.sql)** — this single file creates all tables, functions, triggers, RLS policies, and grants. Safe to run multiple times.
+
+## Migrate via CLI (if installed)
 
 ```bash
 supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-### Option B: SQL Editor
+## ## Admin credentials
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project → **SQL Editor**
-2. Run in order:
-   - `supabase/migrations/20260523120000_create_contact_inquiries.sql`
-   - `supabase/migrations/20260523130000_remove_email_from_contact_inquiries.sql` (only if you already created the table **with** an `email` column)
+The admin login at `/admin` verifies credentials against the `admin_users` table using a secure `pgcrypto` hash — no credentials are hardcoded.
+
+**Default admin user** (run the migration first):
+- Email: `kedantra@gmail.com`  
+- Password: `kedantra`
+
+To change the password, run in Supabase SQL Editor:
+```sql
+UPDATE admin_users SET password_hash = crypt('new-password', gen_salt('bf'))
+WHERE email = 'kedantra@gmail.com';
+```
+
+## Per-file order (for reference)
+
+To run individually, execute in this order:
+1. `migrations/20260523120000_create_contact_inquiries.sql`
+2. `migrations/20260523130000_remove_email_from_contact_inquiries.sql` (only if you already created the table **with** an `email` column)
+3. `migrations/20260528120000_create_customer_experiences.sql`
+4. `migrations/20260620000000_create_admin_users.sql`
 
 ## Table: `public.contact_inquiries`
 
@@ -79,13 +97,21 @@ Run migration: `supabase/migrations/20260528120000_create_customer_experiences.s
 | `image_url`    | `text`      | Optional https URL             |
 | `is_published` | `boolean`   | Default `true`                 |
 | `source`       | `text`      | Default `website`              |
+| `user_agent`   | `text`      | Optional, set by API           |
+| `page_path`    | `text`      | Optional referer/path          |
 | `created_at`   | `timestamptz` | Auto                         |
+| `updated_at`   | `timestamptz` | Auto on update               |
 
 ### RLS
 
-| Policy                              | Action | Rule                    |
-|-------------------------------------|--------|-------------------------|
-| `customer_experiences_select_public`  | SELECT | `is_published = true`   |
-| `customer_experiences_insert_anon`    | INSERT | published + `website`   |
+| Policy                                    | Roles            | Action | Rule                          |
+|-------------------------------------------|------------------|--------|-------------------------------|
+| `customer_experiences_select_public`      | `anon`, `authenticated` | SELECT | `is_published = true`         |
+| `customer_experiences_insert_anon`        | `anon`           | INSERT | published + `website` source  |
+| `customer_experiences_insert_authenticated` | `authenticated` | INSERT | published + `website` source  |
 
 The **Customer Experiences** section on the site reads via `GET /api/customer-experiences` and inserts via `POST /api/customer-experiences`.
+
+### Data API
+
+If customer_experiences is not visible via the Data API after running migrations, check your project's **Data API Settings** in the dashboard and grant `SELECT`/`INSERT` to the `anon` and `authenticated` roles. The `run_all_migrations.sql` script already includes the required GRANT statements.

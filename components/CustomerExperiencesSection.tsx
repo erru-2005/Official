@@ -15,13 +15,13 @@ import {
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 const inputCls =
-  "w-full rounded-xl border border-white/12 bg-white/5 px-4 py-3 text-[0.9rem] text-white outline-none placeholder:text-white/30 focus:border-white/35 focus:bg-white/8 transition-colors duration-150 disabled:opacity-50";
+  "w-full rounded-xl border border-white/12 bg-white/5 px-3.5 py-2.5 text-[0.85rem] text-white outline-none placeholder:text-white/30 focus:border-white/35 focus:bg-white/8 transition-colors duration-150 disabled:opacity-50";
 
 function Field({ label, optional, children }: { label: string; optional?: boolean; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-[0.83rem] font-semibold text-white/80">
-        {label}{optional && <span className="ml-1.5 font-normal text-white/35">(optional)</span>}
+    <div className="flex flex-col gap-1">
+      <span className="text-[0.8rem] font-semibold text-white/80">
+        {label}{optional && <span className="ml-1 font-normal text-white/35">(optional)</span>}
       </span>
       {children}
     </div>
@@ -105,14 +105,14 @@ function FormFields({ status, error, imageVal, setImageVal }: {
   imageVal: string; setImageVal: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className="flex flex-col gap-2.5">
       {error && (
-        <p role="alert" className="rounded-xl border border-secondary/40 bg-secondary/10 px-4 py-2.5 text-[0.82rem] text-secondary">
+        <p role="alert" className="rounded-lg border border-secondary/40 bg-secondary/10 px-3 py-2 text-[0.8rem] text-secondary">
           {error}
         </p>
       )}
       <Field label="Your experience">
-        <textarea required name="quote" rows={4} minLength={10} maxLength={2000}
+        <textarea required name="quote" rows={3} minLength={10} maxLength={2000}
           disabled={status === "submitting"} placeholder="What was it like working with KEDANTRA?"
           className={`${inputCls} resize-none`} />
       </Field>
@@ -143,51 +143,8 @@ export function CustomerExperiencesSection() {
   const [formStatus, setFormStatus]   = useState<FormStatus>("idle");
   const [formError, setFormError]     = useState<string | null>(null);
   const [imageValue, setImageValue]   = useState("");
-
-  /* ── scroll lock ──────────────────────────────────────────────────
-     When the dialog opens we:
-     1. Record the current scroll position
-     2. Fix the body in place (position:fixed + top = -scrollY)
-        so it can't scroll even if overflow-x:hidden creates a
-        scroll container that defeats overflow:hidden on html
-     3. Compensate the right padding so the page doesn't jump when
-        the scrollbar disappears
-     On close everything is restored.
-  ─────────────────────────────────────────────────────────────────── */
-  useEffect(() => {
-    if (!dialogOpen) return;
-
-    const body    = document.body;
-    const html    = document.documentElement;
-    const scrollY = window.scrollY;
-    const sbWidth = window.innerWidth - html.clientWidth;
-
-    const prev = {
-      position:    body.style.position,
-      top:         body.style.top,
-      width:       body.style.width,
-      paddingRight: body.style.paddingRight,
-      overflow:    html.style.overflow,
-    };
-
-    /* lock */
-    html.style.overflow      = "hidden";
-    body.style.position      = "fixed";
-    body.style.top           = `-${scrollY}px`;
-    body.style.width         = "100%";
-    if (sbWidth > 0) body.style.paddingRight = `${sbWidth}px`;
-
-    return () => {
-      /* restore */
-      html.style.overflow      = prev.overflow;
-      body.style.position      = prev.position;
-      body.style.top           = prev.top;
-      body.style.width         = prev.width;
-      body.style.paddingRight  = prev.paddingRight;
-      /* jump back to where the user was */
-      window.scrollTo({ top: scrollY, behavior: "instant" });
-    };
-  }, [dialogOpen]);
+  const [isPaused, setIsPaused]       = useState(false);
+  const autoSlideRef                  = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /* fetch */
   const fetchExperiences = useCallback(async () => {
@@ -205,6 +162,17 @@ export function CustomerExperiencesSection() {
   useEffect(() => {
     if (experiences.length > 0 && active >= experiences.length) setActive(experiences.length - 1);
   }, [experiences.length, active]);
+
+  useEffect(() => {
+    if (experiences.length <= 1 || isPaused || dialogOpen || formStatus === "submitting") {
+      if (autoSlideRef.current) { clearInterval(autoSlideRef.current); autoSlideRef.current = null; }
+      return;
+    }
+    autoSlideRef.current = setInterval(() => {
+      setActive(prev => (prev + 1) % experiences.length);
+    }, 5000);
+    return () => { if (autoSlideRef.current) { clearInterval(autoSlideRef.current); autoSlideRef.current = null; } };
+  }, [experiences.length, isPaused, dialogOpen, formStatus]);
 
   /* carousel */
   const go = (i: number) => {
@@ -294,34 +262,34 @@ export function CustomerExperiencesSection() {
             <DialogContent className="w-full overflow-hidden" style={panelStyle}>
 
               {/* ════ SHEET layout (visible below lg) ════ */}
-              <div className="lg:hidden flex flex-col max-h-[calc(100dvh-3rem)]">
+              <div className="lg:hidden flex flex-col max-h-[calc(100dvh-4rem)]">
 
                 {/* pill — closes dialog */}
                 <DialogClose asChild>
-                  <button type="button" aria-label="Close" className="w-full flex justify-center pt-3 pb-1 group shrink-0">
-                    <span className="h-1 w-10 rounded-full bg-white/25 group-hover:bg-white/50 transition-colors" />
+                  <button type="button" aria-label="Close" className="w-full flex justify-center pt-2 pb-0.5 group shrink-0">
+                    <span className="h-1 w-9 rounded-full bg-white/25 group-hover:bg-white/50 transition-colors" />
                   </button>
                 </DialogClose>
 
-                {/* header — one X only */}
-                <div className="relative flex items-start gap-3 px-5 pt-3 pb-4 border-b border-white/8 shrink-0">
-                  <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8">
-                    <UserCircle2 className="size-5 text-white/55" strokeWidth={1.5} />
+                {/* header — compact */}
+                <div className="relative flex items-start gap-2.5 px-4 pt-2 pb-3 border-b border-white/8 shrink-0">
+                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8">
+                    <UserCircle2 className="size-4 text-white/55" strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1 min-w-0 pr-10">
-                    <DialogTitle>Share your experience</DialogTitle>
-                    <DialogDescription>Your story appears in the carousel right away for everyone to see.</DialogDescription>
+                  <div className="flex-1 min-w-0 pr-8">
+                    <DialogTitle className="text-[1rem]">Share your experience</DialogTitle>
+                    <DialogDescription className="text-[0.78rem]">Your story appears for everyone to see.</DialogDescription>
                   </div>
                   <DialogClose asChild>
                     <button type="button" aria-label="Close"
-                      className="absolute right-4 top-3 rounded-full p-1.5 text-white/40 hover:bg-white/10 hover:text-white transition-colors">
-                      <X className="size-4" />
+                      className="absolute right-3 top-2 rounded-full p-1 text-white/40 hover:bg-white/10 hover:text-white transition-colors">
+                      <X className="size-3.5" />
                     </button>
                   </DialogClose>
                 </div>
 
-                {/* scrollable form */}
-                <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {/* scrollable form — no scrollbar visible */}
+                <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3 scrollbar-none">
                   {formStatus === "success" ? SuccessPanel : (
                     <form id="exp-form-mobile" onSubmit={handleSubmit}>
                       <FormFields status={formStatus} error={formError} imageVal={imageValue} setImageVal={setImageValue} />
@@ -331,14 +299,14 @@ export function CustomerExperiencesSection() {
 
                 {/* stacked CTA footer */}
                 {formStatus !== "success" && (
-                  <div className="shrink-0 flex flex-col gap-2 px-5 pb-6 pt-3 border-t border-white/8">
+                  <div className="shrink-0 flex flex-col gap-1.5 px-4 pb-4 pt-2.5 border-t border-white/8">
                     <button type="submit" form="exp-form-mobile" disabled={formStatus === "submitting"}
-                      className="w-full rounded-xl bg-secondary py-3.5 text-[0.95rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
-                      {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving…</> : "Publish experience"}
+                      className="w-full rounded-xl bg-secondary py-3 text-[0.9rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
+                      {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving&hellip;</> : "Publish experience"}
                     </button>
                     <DialogClose asChild>
                       <button type="button" disabled={formStatus === "submitting"}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 py-3 text-[0.9rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
+                        className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 text-[0.85rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
                         Cancel
                       </button>
                     </DialogClose>
@@ -346,28 +314,18 @@ export function CustomerExperiencesSection() {
                 )}
               </div>
 
-              {/* ════ DESKTOP landscape layout (visible at lg+) ════ */}
-              <div className="hidden lg:flex flex-row min-h-[26rem] max-h-[85dvh]">
+              {/* ════ DESKTOP centered layout (visible at lg+) ════ */}
+              <div className="hidden lg:flex flex-col max-h-[85dvh]">
 
-                {/* LEFT column — info panel */}
-                <div className="relative flex flex-col justify-between w-[42%] shrink-0 bg-white/3 border-r border-white/8 p-8">
-                  {/* top: avatar + title */}
-                  <div className="flex flex-col gap-5">
-                    <div className="flex size-12 items-center justify-center rounded-full border border-white/15 bg-white/8">
-                      <UserCircle2 className="size-6 text-white/55" strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <DialogTitle className="text-[1.25rem] leading-tight">Share your experience</DialogTitle>
-                      <DialogDescription className="mt-2 text-[0.88rem]">
-                        Your story is saved to our database and appears in the carousel right away for everyone to see.
-                      </DialogDescription>
-                    </div>
+                {/* header — compact */}
+                <div className="relative flex items-start gap-3 px-6 pt-5 pb-3 border-b border-white/8 shrink-0">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/8">
+                    <UserCircle2 className="size-5 text-white/55" strokeWidth={1.5} />
                   </div>
-
-                  {/* bottom: decorative quote mark */}
-                  <div className="mt-8 select-none text-[5rem] leading-none text-white/5 font-serif">&ldquo;</div>
-
-                  {/* X close — only here on desktop */}
+                  <div className="flex-1 min-w-0 pr-8">
+                    <DialogTitle className="text-[1.15rem]">Share your experience</DialogTitle>
+                    <DialogDescription className="text-[0.82rem]">Your story appears for everyone to see.</DialogDescription>
+                  </div>
                   <DialogClose asChild>
                     <button type="button" aria-label="Close"
                       className="absolute right-4 top-4 rounded-full p-1.5 text-white/35 hover:bg-white/10 hover:text-white transition-colors">
@@ -376,34 +334,30 @@ export function CustomerExperiencesSection() {
                   </DialogClose>
                 </div>
 
-                {/* RIGHT column — form */}
-                <div className="flex flex-col flex-1 min-w-0">
-
-                  {/* scrollable form area */}
-                  <div className="flex-1 overflow-y-auto overscroll-contain px-7 py-7 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                    {formStatus === "success" ? SuccessPanel : (
-                      <form id="exp-form-desktop" onSubmit={handleSubmit}>
-                        <FormFields status={formStatus} error={formError} imageVal={imageValue} setImageVal={setImageValue} />
-                      </form>
-                    )}
-                  </div>
-
-                  {/* footer — side-by-side on desktop */}
-                  {formStatus !== "success" && (
-                    <div className="shrink-0 flex gap-3 px-7 pb-7 pt-4 border-t border-white/8">
-                      <DialogClose asChild>
-                        <button type="button" disabled={formStatus === "submitting"}
-                          className="flex-1 rounded-xl border border-white/10 bg-white/5 py-3 text-[0.88rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
-                          Cancel
-                        </button>
-                      </DialogClose>
-                      <button type="submit" form="exp-form-desktop" disabled={formStatus === "submitting"}
-                        className="flex-[2] rounded-xl bg-secondary py-3 text-[0.92rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
-                        {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving…</> : "Publish experience"}
-                      </button>
-                    </div>
+                {/* scrollable form area — no scrollbar visible */}
+                <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4 scrollbar-none">
+                  {formStatus === "success" ? SuccessPanel : (
+                    <form id="exp-form-desktop" onSubmit={handleSubmit}>
+                      <FormFields status={formStatus} error={formError} imageVal={imageValue} setImageVal={setImageValue} />
+                    </form>
                   )}
                 </div>
+
+                {/* footer — side-by-side */}
+                {formStatus !== "success" && (
+                  <div className="shrink-0 flex gap-3 px-6 pb-5 pt-3 border-t border-white/8">
+                    <DialogClose asChild>
+                      <button type="button" disabled={formStatus === "submitting"}
+                        className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-[0.85rem] font-medium text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors">
+                        Cancel
+                      </button>
+                    </DialogClose>
+                    <button type="submit" form="exp-form-desktop" disabled={formStatus === "submitting"}
+                      className="flex-[2] rounded-xl bg-secondary py-2.5 text-[0.88rem] font-semibold text-white hover:bg-[#9a0000] active:bg-[#700000] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
+                      {formStatus === "submitting" ? <><Loader2 className="size-4 animate-spin" />Saving&hellip;</> : "Publish experience"}
+                    </button>
+                  </div>
+                )}
 
               </div>
 
@@ -436,7 +390,7 @@ export function CustomerExperiencesSection() {
             </button>
           </div>
         ) : (
-          <div className="w-full px-2 sm:px-6">
+          <div className="w-full px-2 sm:px-6" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <div className="flex items-start gap-4 sm:gap-8">
               <span className="hidden select-none text-[clamp(4rem,12vw,7.5rem)] leading-none font-light text-white/10 sm:block" style={{ fontFeatureSettings: '"tnum"' }}>
                 {indexLabel}
@@ -471,6 +425,9 @@ export function CustomerExperiencesSection() {
                   ))}
                 </div>
                 <span className="text-xs tracking-widest text-white/40 uppercase">{indexLabel} / {String(total).padStart(2, "0")}</span>
+                {experiences.length > 1 && (
+                  <span className={`size-1.5 rounded-full transition-colors duration-500 ${isPaused ? "bg-white/20" : "bg-secondary animate-pulse"}`} />
+                )}
               </div>
               <div className="flex items-center gap-1">
                 <button type="button" onClick={prev} className="rounded-full p-2 text-white/40 transition-all duration-300 hover:bg-white/5 hover:text-white" aria-label="Previous"><ChevronLeft className="size-5" /></button>

@@ -2,12 +2,13 @@
 
 import * as React from "react"
 import { motion } from "motion/react"
-import { Home, Eye, Briefcase, Layers, Mail } from "lucide-react"
+import { Home, Eye, Briefcase, Layers, Mail, MessageSquareQuote } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface MenuBarItem {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   label: string
+  href?: string
 }
 
 interface MenuBarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -90,7 +91,7 @@ export function MenuBar({ items, scrollActiveIndex = -1, className, ...props }: 
           return (
           <a
             key={index}
-            href={`#${item.label.toLowerCase()}`}
+            href={item.href ?? `#${item.label.toLowerCase()}`}
             className={cn(
               "w-11 h-10 px-4 py-1 rounded-full flex justify-center items-center gap-2 transition-all duration-300",
               isItemActive ? "bg-white/15 text-white" : "hover:bg-muted/80 text-foreground/60"
@@ -117,10 +118,11 @@ const navItems = [
   { icon: Eye, label: "Vision" },
   { icon: Briefcase, label: "Projects" },
   { icon: Layers, label: "Process" },
+  { icon: MessageSquareQuote, label: "Reviews", href: "/experience" },
   { icon: Mail, label: "Contact" },
 ]
 
-const sectionIds = navItems.map((item) => item.label.toLowerCase())
+const sectionIds = navItems.filter((item) => !item.href).map((item) => item.label.toLowerCase())
 
 export function SiteNav() {
   const [scrollActiveIndex, setScrollActiveIndex] = React.useState(0)

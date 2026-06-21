@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Home, Eye, Briefcase, Layers, Mail } from "lucide-react";
+import { Home, Eye, Briefcase, Layers, Mail, MessageSquareQuote } from "lucide-react";
 import { KedantraLogo } from "@/components/KedantraLogo";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { id: "vision", icon: Eye, label: "Vision" },
   { id: "projects", icon: Briefcase, label: "Projects" },
   { id: "process", icon: Layers, label: "Process" },
+  { id: "experience", icon: MessageSquareQuote, label: "Reviews", href: "/experience" },
   { id: "contact", icon: Mail, label: "Contact" },
 ];
 
@@ -45,7 +46,7 @@ export function DesktopHeader() {
           return (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={(item as { href?: string }).href ?? `#${item.id}`}
               className="relative flex flex-col items-center group px-3 py-1"
             >
               <motion.div

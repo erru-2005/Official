@@ -1,9 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-const ADMIN_EMAIL = "kedantra@gmail.com";
-const ADMIN_PASSWORD = "kedantra";
-
 export async function POST(request: Request) {
   const referer = request.headers.get("referer") ?? "";
   if (!referer.includes("/admin")) {
@@ -32,21 +29,38 @@ export async function POST(request: Request) {
 
   try {
     const supabase = createSupabaseServerClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
+
+    const { data, error } = await supabase.rpc("verify_admin_password", {
       email,
       password,
     });
 
-    if (!authError) {
+    if (error) {
+      console.error("[admin-login] RPC error:", error.message, error.code, error.details);
+      const isPgCrypto = error.message?.includes("crypt");
+      const isMissingFn = error.message?.includes("does not exist") || error.code === "PGRST202";
+      return NextResponse.json(
+        {
+          error: isPgCrypto
+            ? "Auth setup incomplete: run 'CREATE EXTENSION IF NOT EXISTS pgcrypto;' in Supabase SQL Editor first."
+            : isMissingFn
+              ? "Admin auth not set up. Run supabase/run_all_migrations.sql in the Supabase SQL Editor."
+              : "Authentication service unavailable.",
+        },
+        { status: 503 },
+      );
+    }
+
+    if (data === true) {
       return NextResponse.json({ ok: true });
     }
-  } catch {
-    // Supabase unavailable — fall through to hardcoded check
-  }
 
-  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  } catch (err) {
+    console.error("[admin-login] Server error:", err);
+    return NextResponse.json(
+      { error: "Server configuration error." },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 }

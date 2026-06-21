@@ -12,8 +12,8 @@ export type ValidationResult =
   | { ok: true; data: CustomerExperienceInsert }
   | { ok: false; error: string };
 
-const HTTPS_URL =
-  /^https:\/\/[^\s/$.?#].[^\s]*$/i;
+const VALID_IMAGE_SRC =
+  /^(https:\/\/[^\s/$.?#].[^\s]*|data:image\/[a-z]+;base64,)/i;
 
 export function validateCustomerExperienceForm(
   input: CustomerExperienceFormInput,
@@ -47,10 +47,10 @@ export function validateCustomerExperienceForm(
     return { ok: false, error: "Company must be 120 characters or fewer." };
   }
 
-  if (imageUrl && !HTTPS_URL.test(imageUrl)) {
+  if (imageUrl && !VALID_IMAGE_SRC.test(imageUrl)) {
     return {
       ok: false,
-      error: "Image URL must be a valid https link.",
+      error: "Image must be a valid https link or an uploaded photo.",
     };
   }
 

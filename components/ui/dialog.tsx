@@ -60,7 +60,7 @@ const DialogContent = React.forwardRef<
     */}
     <div
       className={cn(
-        "fixed z-50 pointer-events-none",
+        "fixed z-50 pointer-events-none overflow-hidden",
         /* sheet mode < lg */
         "inset-x-0 bottom-0 top-12 flex flex-col justify-end",
         /* center mode ≥ lg */
