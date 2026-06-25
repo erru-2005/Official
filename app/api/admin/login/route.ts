@@ -36,17 +36,31 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error("[admin-login] RPC error:", error.message, error.code, error.details);
-      const isPgCrypto = error.message?.includes("crypt");
-      const isMissingFn = error.message?.includes("does not exist") || error.code === "PGRST202";
+      console.error("[admin-login] RPC error:", JSON.stringify({ message: error.message, code: error.code, details: error.details, hint: error.hint }));
+      const isMissingFn = error.code === "PGRST202" || error.message?.includes("does not exist");
+      const isCryptMissing = error.message?.includes("does not exist") && error.message?.includes("crypt");
+      const isCryptBadHash = error.message?.includes("crypt") && (error.message?.includes("Illegal salt") || error.message?.includes("error"));
+
+      if (isMissingFn) {
+        return NextResponse.json(
+          { error: "Admin auth not set up. Run supabase/run_all_migrations.sql in the Supabase SQL Editor." },
+          { status: 503 },
+        );
+      }
+      if (isCryptMissing) {
+        return NextResponse.json(
+          { error: "Auth setup incomplete: run 'CREATE EXTENSION IF NOT EXISTS pgcrypto;' in Supabase SQL Editor first." },
+          { status: 503 },
+        );
+      }
+      if (isCryptBadHash) {
+        return NextResponse.json(
+          { error: "Admin password hash is corrupted. Re-run supabase/run_all_migrations.sql to fix it." },
+          { status: 503 },
+        );
+      }
       return NextResponse.json(
-        {
-          error: isPgCrypto
-            ? "Auth setup incomplete: run 'CREATE EXTENSION IF NOT EXISTS pgcrypto;' in Supabase SQL Editor first."
-            : isMissingFn
-              ? "Admin auth not set up. Run supabase/run_all_migrations.sql in the Supabase SQL Editor."
-              : "Authentication service unavailable.",
-        },
+        { error: "Authentication service unavailable." },
         { status: 503 },
       );
     }

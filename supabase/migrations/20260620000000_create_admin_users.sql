@@ -5,7 +5,7 @@
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE public.admin_users (
+CREATE TABLE IF NOT EXISTS public.admin_users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email text UNIQUE NOT NULL,
   password_hash text NOT NULL,
@@ -24,7 +24,11 @@ COMMENT ON TABLE public.admin_users IS
 --   UPDATE admin_users SET password_hash = crypt('new-password', gen_salt('bf')) WHERE email = 'kedantra@gmail.com';
 INSERT INTO public.admin_users (email, password_hash)
 VALUES ('kedantra@gmail.com', crypt('kedantra', gen_salt('bf')))
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+  password_hash = CASE
+    WHEN admin_users.password_hash !~ '^\$2[aby]\$\d{2}\$.' THEN EXCLUDED.password_hash
+    ELSE admin_users.password_hash
+  END;
 
 -- RLS: only service_role can touch the table directly
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
@@ -43,7 +47,7 @@ CREATE OR REPLACE FUNCTION public.verify_admin_password(email text, password tex
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   RETURN EXISTS (
@@ -54,7 +58,6 @@ BEGIN
 END;
 $$;
 
--- Allow anon/authenticated to call the function
 GRANT EXECUTE ON FUNCTION public.verify_admin_password TO anon, authenticated;
 
 -- Verification query (run in SQL Editor after migration):

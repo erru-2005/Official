@@ -255,10 +255,14 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
 COMMENT ON TABLE public.admin_users IS
   'Administrator credentials used by the /admin login panel.';
 
--- Seed the default admin user (safe to re-run)
+-- Seed the default admin user (safe to re-run — updates hash if password_hash is not a valid bcrypt hash)
 INSERT INTO public.admin_users (email, password_hash)
 VALUES ('kedantra@gmail.com', crypt('kedantra', gen_salt('bf')))
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+  password_hash = CASE
+    WHEN admin_users.password_hash !~ '^\$2[aby]\$\d{2}\$.' THEN EXCLUDED.password_hash
+    ELSE admin_users.password_hash
+  END;
 
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
@@ -276,7 +280,7 @@ CREATE OR REPLACE FUNCTION public.verify_admin_password(email text, password tex
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   RETURN EXISTS (
