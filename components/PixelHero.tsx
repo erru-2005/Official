@@ -315,6 +315,7 @@ export function PixelHero({
   const [isLoaded, setIsLoaded] = useState(false);
   const [themeColors, setThemeColors] = useState<string[]>([]);
 
+
   useEffect(() => {
     if (typeof document === "undefined") return;
 
@@ -385,9 +386,13 @@ export function PixelHero({
             Trusted by industry leaders
           </div>
           <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
-            <div className="flex w-max gap-12 py-1 animate-marquee">
-              <div className="flex gap-12 items-center">{BRAND_LOGOS.map((Logo, i) => <Logo key={i} />)}</div>
-              <div className="flex gap-12 items-center" aria-hidden="true">{BRAND_LOGOS.map((Logo, i) => <Logo key={`c-${i}`} />)}</div>
+            <div className="flex w-max gap-12 py-1 animate-marquee pointer-events-auto">
+              <div className="flex gap-12 items-center">
+                {BRAND_LOGOS.map((Logo, i) => <Logo key={i} />)}
+              </div>
+              <div className="flex gap-12 items-center" aria-hidden="true">
+                {BRAND_LOGOS.map((Logo, i) => <Logo key={`c-${i}`} />)}
+              </div>
             </div>
           </div>
         </div>
@@ -421,9 +426,13 @@ export function PixelHero({
           Trusted by industry leaders
         </span>
         <div className="relative w-full max-w-5xl overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_15%,white_85%,transparent)]">
-          <div className="flex w-max gap-16 py-3 animate-marquee">
-            <div className="flex gap-16 items-center">{BRAND_LOGOS.map((Logo, i) => <Logo key={i} />)}</div>
-            <div className="flex gap-16 items-center" aria-hidden="true">{BRAND_LOGOS.map((Logo, i) => <Logo key={`c-${i}`} />)}</div>
+          <div className="flex w-max gap-16 py-3 animate-marquee pointer-events-auto">
+            <div className="flex gap-16 items-center">
+              {BRAND_LOGOS.map((Logo, i) => <Logo key={i} />)}
+            </div>
+            <div className="flex gap-16 items-center" aria-hidden="true">
+              {BRAND_LOGOS.map((Logo, i) => <Logo key={`c-${i}`} />)}
+            </div>
           </div>
         </div>
       </div>

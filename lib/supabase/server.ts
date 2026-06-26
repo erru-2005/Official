@@ -21,3 +21,27 @@ export function createSupabaseServerClient() {
     },
   });
 }
+
+/**
+ * Admin client using the service_role key — bypasses RLS entirely.
+ * ONLY use in server-side API routes, never in client components.
+ * Requires SUPABASE_SERVICE_ROLE_KEY in env.
+ */
+export function createSupabaseAdminClient() {
+  const url =
+    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceKey) {
+    throw new Error(
+      "Missing env: SUPABASE_SERVICE_ROLE_KEY is required for admin operations.",
+    );
+  }
+
+  return createClient(url, serviceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}

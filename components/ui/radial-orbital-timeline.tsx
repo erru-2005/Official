@@ -289,7 +289,7 @@ export default function RadialOrbitalTimeline({
                 </div>
 
                 {isExpanded && (
-                  <Card className="absolute top-16 left-1/2 w-[clamp(10rem,60vw,14rem)] -translate-x-1/2 overflow-y-auto border-white/30 bg-black/90 text-white shadow-xl shadow-white/10 backdrop-blur-lg">
+                  <Card className="absolute top-16 left-1/2 w-[clamp(10rem,60vw,14rem)] max-h-[240px] -translate-x-1/2 overflow-y-auto border-white/30 bg-black/90 text-white shadow-xl shadow-white/10 backdrop-blur-lg">
                     <div className="absolute -top-3 left-1/2 h-3 w-px -translate-x-1/2 bg-white/50" />
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
