@@ -78,6 +78,29 @@ function Toast({ msg, type, onClose }: { msg: string; type: "ok" | "err"; onClos
   );
 }
 
+function ConfirmModal({
+  title, message, onConfirm, onCancel,
+}: {
+  title: string; message: string; onConfirm: () => void; onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl border border-black/8 shadow-2xl overflow-hidden p-6 text-center">
+        <h3 className="font-serif font-bold text-lg text-black mb-2">{title}</h3>
+        <p className="text-sm text-black/60 mb-6">{message}</p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm text-black/50 hover:bg-black/[0.03] transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm} className="flex-1 rounded-xl bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-100 transition-colors">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Add Project Form ─────────────────────────────────────────────────────────
 
 const INPUT = "w-full rounded-lg border border-black/10 bg-black/[0.02] px-3.5 py-2.5 text-sm text-black outline-none focus:border-black/30 focus:bg-white transition-colors placeholder:text-black/20 disabled:opacity-50";
@@ -345,8 +368,12 @@ function ReviewsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => vo
 
   useEffect(() => { load(); }, [load]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this review? This cannot be undone.")) return;
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+
+  const confirmDelete = async () => {
+    if (!reviewToDelete) return;
+    const id = reviewToDelete;
+    setReviewToDelete(null);
     setDeletingId(id);
     try {
       const res = await fetch("/api/admin/reviews", {
@@ -372,14 +399,16 @@ function ReviewsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => vo
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
         <div>
           <h2 className="font-serif font-bold text-xl text-black">User Reviews</h2>
           <p className="text-xs text-black/40 mt-0.5">{reviews.length} total submission{reviews.length !== 1 ? "s" : ""}</p>
         </div>
-        <button onClick={load} className="flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black/50 hover:text-black hover:border-black/20 transition-colors">
-          <RefreshCw className="size-3.5" /> Refresh
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={load} className="flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black/50 hover:text-black hover:border-black/20 transition-colors">
+            <RefreshCw className="size-3.5" /> Refresh
+          </button>
+        </div>
       </div>
 
       {warning && (
@@ -399,26 +428,28 @@ function ReviewsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => vo
         <div className="space-y-3">
           {reviews.map(r => (
             <div key={r.id} className="group rounded-xl border border-black/8 bg-white p-5 hover:border-black/15 transition-colors">
-              <div className="flex items-start justify-between gap-4">
-                {r.image_url && (
-                  <div className="shrink-0 size-12 rounded-full overflow-hidden border border-black/10 bg-black/5 mt-1">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.image_url} alt={r.author} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-black/70 leading-relaxed line-clamp-3 mb-3 italic">
-                    &ldquo;{r.quote}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-sm font-semibold text-black">{r.author}</span>
-                    {r.role && <span className="text-xs text-black/40">{r.role}</span>}
-                    {r.company && <span className="text-xs text-black/40">@ {r.company}</span>}
-                    <StatusBadge ok={r.is_published} />
-                    <span className="text-[10px] text-black/25">{fmtDate(r.created_at)}</span>
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  {r.image_url && (
+                    <div className="shrink-0 size-12 rounded-full overflow-hidden border border-black/10 bg-black/5 mt-1">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={r.image_url} alt={r.author} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-black/70 leading-relaxed line-clamp-3 mb-3 italic">
+                      &ldquo;{r.quote}&rdquo;
+                    </p>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-sm font-semibold text-black">{r.author}</span>
+                      {r.role && <span className="text-xs text-black/40">{r.role}</span>}
+                      {r.company && <span className="text-xs text-black/40">@ {r.company}</span>}
+                      <StatusBadge ok={r.is_published} />
+                      <span className="text-[10px] text-black/25">{fmtDate(r.created_at)}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="shrink-0 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => setEditingReview(r)}
                     className="rounded-lg border border-black/10 bg-white p-2 text-black/50 hover:bg-black/5 hover:text-black transition-all"
@@ -427,7 +458,7 @@ function ReviewsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => vo
                     <Pencil className="size-3.5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(r.id)}
+                    onClick={() => setReviewToDelete(r.id)}
                     disabled={deletingId === r.id}
                     className="rounded-lg border border-red-100 bg-red-50 p-2 text-red-400 hover:bg-red-100 hover:text-red-600 transition-all disabled:opacity-40"
                     title="Delete review"
@@ -451,6 +482,15 @@ function ReviewsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => vo
             setReviews(prev => prev.map(r => r.id === updatedReview.id ? updatedReview : r));
             onToast("Review updated successfully", "ok");
           }}
+        />
+      )}
+
+      {reviewToDelete && (
+        <ConfirmModal
+          title="Delete Review"
+          message="Delete this review? This cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setReviewToDelete(null)}
         />
       )}
     </div>
@@ -601,8 +641,12 @@ function ProjectsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => v
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this project permanently?")) return;
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+
+  const confirmDelete = async () => {
+    if (!projectToDelete) return;
+    const id = projectToDelete;
+    setProjectToDelete(null);
     setDeletingId(id);
     try {
       const res = await fetch("/api/admin/projects", {
@@ -628,20 +672,20 @@ function ProjectsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => v
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
         <div>
           <h2 className="font-serif font-bold text-xl text-black">Projects</h2>
           <p className="text-xs text-black/40 mt-0.5">
             {projects.filter(p => p.is_published).length} published · {projects.length} total
           </p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={load} className="flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black/50 hover:text-black hover:border-black/20 transition-colors">
+        <div className="flex flex-wrap gap-2">
+          <button onClick={load} className="flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black/50 hover:text-black hover:border-black/20 transition-colors">
             <RefreshCw className="size-3.5" /> Refresh
           </button>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-semibold text-white hover:bg-black/90 transition-colors"
+            className="flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-semibold text-white hover:bg-black/90 transition-colors"
           >
             <Plus className="size-3.5" /> Add Project
           </button>
@@ -668,32 +712,34 @@ function ProjectsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => v
         <div className="space-y-3">
           {projects.map(p => (
             <div key={p.id} className="group rounded-xl border border-black/8 bg-white hover:border-black/15 transition-colors overflow-hidden">
-              <div className="flex items-start gap-4 p-5">
-                {/* Image thumbnail */}
-                {p.image_url ? (
-                  <div className="shrink-0 size-14 rounded-lg overflow-hidden border border-black/6 bg-black/5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="shrink-0 size-14 rounded-lg border border-dashed border-black/10 bg-black/[0.02] flex items-center justify-center">
-                    <FolderKanban className="size-5 text-black/15" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="font-serif font-bold text-sm text-black">{p.title}</span>
-                    <StatusBadge ok={p.is_published} />
-                  </div>
-                  <p className="text-xs text-black/40 mb-2">{p.category}</p>
-                  <p className="text-xs text-black/55 leading-relaxed line-clamp-2">{p.description}</p>
-                  {p.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {p.tags.map(t => <TagBadge key={t} label={t} />)}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-5">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  {/* Image thumbnail */}
+                  {p.image_url ? (
+                    <div className="shrink-0 size-14 rounded-lg overflow-hidden border border-black/6 bg-black/5">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="shrink-0 size-14 rounded-lg border border-dashed border-black/10 bg-black/[0.02] flex items-center justify-center">
+                      <FolderKanban className="size-5 text-black/15" />
                     </div>
                   )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="font-serif font-bold text-sm text-black">{p.title}</span>
+                      <StatusBadge ok={p.is_published} />
+                    </div>
+                    <p className="text-xs text-black/40 mb-2">{p.category}</p>
+                    <p className="text-xs text-black/55 leading-relaxed line-clamp-2">{p.description}</p>
+                    {p.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {p.tags.map(t => <TagBadge key={t} label={t} />)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="shrink-0 flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => setEditingProject(p)}
                     className="rounded-lg border border-black/10 bg-white p-1.5 text-black/50 hover:bg-black/5 hover:text-black transition-colors"
@@ -714,7 +760,7 @@ function ProjectsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => v
                         : <><Eye className="size-3" /> Publish</>}
                   </button>
                   <button
-                    onClick={() => handleDelete(p.id)}
+                    onClick={() => setProjectToDelete(p.id)}
                     disabled={deletingId === p.id}
                     className="rounded-lg border border-red-100 bg-red-50 p-1.5 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors disabled:opacity-40"
                     title="Delete project"
@@ -746,6 +792,15 @@ function ProjectsTab({ onToast }: { onToast: (msg: string, t: "ok" | "err") => v
             setProjects(prev => prev.map(p => p.id === updated.id ? updated : p));
             onToast("Project updated!", "ok");
           }}
+        />
+      )}
+
+      {projectToDelete && (
+        <ConfirmModal
+          title="Delete Project"
+          message="Delete this project permanently?"
+          onConfirm={confirmDelete}
+          onCancel={() => setProjectToDelete(null)}
         />
       )}
     </div>
@@ -1077,7 +1132,7 @@ export default function AdminPage() {
         <div className="flex justify-center">
           <div className="w-full sm:w-10/12 md:w-8/12 text-center">
             <div
-              className="bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] h-[250px] sm:h-[350px] md:h-[400px] bg-center bg-no-repeat bg-contain cursor-pointer"
+              className="bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] h-[250px] sm:h-[350px] md:h-[400px] bg-center bg-no-repeat bg-contain cursor-default"
               onClick={handleImageClick}
               aria-hidden="true"
             >

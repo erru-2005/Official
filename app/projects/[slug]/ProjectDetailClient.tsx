@@ -244,7 +244,7 @@ export function ProjectDetailClient({ project }: { project: Project }) {
 
         {/* CTA banner */}
         <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
+          <div className="text-center sm:text-left">
             <p className="font-bold text-white text-lg">Interested in this project?</p>
             <p className="text-sm text-white/40 mt-0.5">
               Let&apos;s talk about how we can build something similar for you.
