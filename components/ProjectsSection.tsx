@@ -184,7 +184,7 @@ export function ProjectsSection() {
                   }}
                 >
                   <FlippingCard
-                    height={350}
+                    height={400}
                     isFlipped={flippedCardId === project.id}
                     onFlipToggle={() => {
                       setFlippedCardId(cur => cur === project.id ? null : project.id);

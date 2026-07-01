@@ -570,9 +570,12 @@ function EditReviewModal({
             <label className="block text-xs font-semibold text-black/50 uppercase tracking-wider mb-1.5">Company</label>
             <input className={INPUT} placeholder="Acme Corp" value={form.company} onChange={e => set("company", e.target.value)} disabled={loading} />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-black/50 uppercase tracking-wider mb-1.5">Image URL</label>
-            <input className={INPUT} placeholder="https://example.com/avatar.jpg" value={form.image_url} onChange={e => set("image_url", e.target.value)} disabled={loading} />
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-black/50 uppercase tracking-wider">Image URL <span className="normal-case font-normal">(optional)</span></label>
+            <div className="flex gap-2">
+              <input className={INPUT} placeholder="https://example.com/avatar.jpg" value={form.image_url} onChange={e => set("image_url", e.target.value)} disabled={loading} />
+              <FileUpload onUpload={(url) => set("image_url", url)} />
+            </div>
           </div>
           <div className="flex flex-col justify-end pt-2">
             <label className="flex items-center gap-2.5 cursor-pointer select-none">

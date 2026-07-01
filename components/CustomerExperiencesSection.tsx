@@ -402,7 +402,7 @@ export function CustomerExperiencesSection() {
                 <div className={`mt-8 transition-all duration-300 delay-100 sm:mt-10 ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
                   <div className="group flex cursor-default items-center gap-4">
                     <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-white/10 transition-all duration-300 group-hover:ring-white/30">
-                      <Image src={current.image} alt={current.author} fill className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0" sizes="48px" />
+                      <Image src={current.image} alt={current.author} fill className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0" sizes="48px" unoptimized />
                     </div>
                     <div>
                       <p className="font-medium text-white">{current.author}</p>

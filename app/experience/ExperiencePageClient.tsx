@@ -278,7 +278,7 @@ export function ExperiencePageClient() {
                   </blockquote>
                   <div className="mt-8 flex items-center gap-4">
                     <div className="relative size-14 overflow-hidden rounded-full ring-2 ring-white/10">
-                      <Image src={experiences[0].image} alt={experiences[0].author} fill className="object-cover" sizes="56px" />
+                      <Image src={experiences[0].image} alt={experiences[0].author} fill className="object-cover" sizes="56px" unoptimized />
                     </div>
                     <div>
                       <p className="font-medium text-white text-[1.05rem]">{experiences[0].author}</p>
@@ -313,7 +313,7 @@ export function ExperiencePageClient() {
                       </blockquote>
                       <div className="mt-5 flex items-center gap-3">
                         <div className="relative size-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
-                          <Image src={exp.image} alt={exp.author} fill className="object-cover" sizes="40px" />
+                          <Image src={exp.image} alt={exp.author} fill className="object-cover" sizes="40px" unoptimized />
                         </div>
                         <div className="min-w-0">
                           <p className="text-[0.88rem] font-medium text-white truncate">{exp.author}</p>
