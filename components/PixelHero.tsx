@@ -198,6 +198,8 @@ function PixelCanvas({ colors, gap = 5, speed = 30 }: PixelCanvasProps) {
   const animationRef = useRef<number>(0);
   const lastFrameRef = useRef(performance.now());
   const reducedMotionRef = useRef(false);
+  const prevWidthRef = useRef(0);
+  const prevHeightRef = useRef(0);
 
   const init = useCallback(() => {
     const canvas = canvasRef.current;
@@ -210,25 +212,42 @@ function PixelCanvas({ colors, gap = 5, speed = 30 }: PixelCanvasProps) {
     const { width, height } = wrap.getBoundingClientRect();
     const w = Math.floor(width);
     const h = Math.floor(height);
+
+    const prevWidth = prevWidthRef.current;
+    const prevHeight = prevHeightRef.current;
+
+    if (w === prevWidth && h === prevHeight) return;
+
     canvas.width = w;
     canvas.height = h;
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
 
-    const effectiveSpeed = reducedMotionRef.current ? 0 : Math.min(speed, 100) * 0.001;
-    const pixels: Pixel[] = [];
+    // Only recreate pixels if it's the first initialization,
+    // or if the width changed by more than 5px (horizontal layout shift/resize),
+    // or if the height changed significantly by more than 100px (e.g. orientation changes)
+    const widthChanged = Math.abs(w - prevWidth) > 5;
+    const heightChangedSignificantly = Math.abs(h - prevHeight) > 100;
 
-    for (let x = 0; x < w; x += gap) {
-      for (let y = 0; y < h; y += gap) {
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const dx = x - w / 2;
-        const dy = y - h / 2;
-        const delay = reducedMotionRef.current ? 0 : Math.sqrt(dx * dx + dy * dy) * 0.65;
-        pixels.push(createPixel(ctx, canvas, x, y, color, effectiveSpeed, delay));
+    if (pixelsRef.current.length === 0 || widthChanged || heightChangedSignificantly) {
+      prevWidthRef.current = w;
+      prevHeightRef.current = h;
+
+      const effectiveSpeed = reducedMotionRef.current ? 0 : Math.min(speed, 100) * 0.001;
+      const pixels: Pixel[] = [];
+
+      for (let x = 0; x < w; x += gap) {
+        for (let y = 0; y < h; y += gap) {
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const dx = x - w / 2;
+          const dy = y - h / 2;
+          const delay = reducedMotionRef.current ? 0 : Math.sqrt(dx * dx + dy * dy) * 0.65;
+          pixels.push(createPixel(ctx, canvas, x, y, color, effectiveSpeed, delay));
+        }
       }
-    }
 
-    pixelsRef.current = pixels;
+      pixelsRef.current = pixels;
+    }
   }, [colors, gap, speed]);
 
   const animate = useCallback((mode: "appear" | "disappear") => {
@@ -334,7 +353,7 @@ export function PixelHero({
   }, []);
 
   return (
-    <div className="relative w-full min-h-[100dvh] bg-background flex flex-col justify-center gap-3 min-[500px]:gap-6 py-8 min-[500px]:py-0 px-2 min-[500px]:px-6 overflow-hidden select-none isolate">
+    <div className="relative w-full h-screen min-h-[580px] bg-background flex flex-col justify-center gap-3 min-[500px]:gap-6 py-8 min-[500px]:py-0 px-2 min-[500px]:px-6 overflow-hidden select-none isolate">
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0%); }

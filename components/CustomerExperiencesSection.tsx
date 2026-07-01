@@ -31,7 +31,7 @@ function Field({ label, optional, children }: { label: string; optional?: boolea
 function AvatarUpload({ disabled, onValue }: { disabled: boolean; onValue: (v: string) => void }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [urlMode, setUrlMode] = useState(false);
-  const [urlVal, setUrlVal]   = useState("");
+  const [urlVal, setUrlVal] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -135,22 +135,22 @@ function FormFields({ status, error, imageVal, setImageVal }: {
 
 export function CustomerExperiencesSection() {
   const [experiences, setExperiences] = useState<CustomerExperienceCard[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [loadError, setLoadError]     = useState<string | null>(null);
-  const [active, setActive]           = useState(0);
-  const [isTransitioning, setTrans]   = useState(false);
-  const [dialogOpen, setDialogOpen]   = useState(false);
-  const [formStatus, setFormStatus]   = useState<FormStatus>("idle");
-  const [formError, setFormError]     = useState<string | null>(null);
-  const [imageValue, setImageValue]   = useState("");
-  const [isPaused, setIsPaused]       = useState(false);
-  const autoSlideRef                  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [active, setActive] = useState(0);
+  const [isTransitioning, setTrans] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState<FormStatus>("idle");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [imageValue, setImageValue] = useState("");
+  const [isPaused, setIsPaused] = useState(false);
+  const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /* fetch */
   const fetchExperiences = useCallback(async () => {
     setLoading(true); setLoadError(null);
     try {
-      const res  = await fetch("/api/customer-experiences");
+      const res = await fetch("/api/customer-experiences");
       const json = (await res.json()) as { experiences?: CustomerExperienceCard[]; error?: string };
       if (!res.ok) { setLoadError(json.error ?? "Could not load."); setExperiences([]); return; }
       setExperiences(json.experiences ?? []); setActive(0);
@@ -199,7 +199,7 @@ export function CustomerExperiencesSection() {
       image_url: imageValue,
     };
     try {
-      const res  = await fetch("/api/customer-experiences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch("/api/customer-experiences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const json = (await res.json()) as { ok?: boolean; experience?: CustomerExperienceCard; error?: string };
       if (!res.ok) { setFormError(json.error ?? "Something went wrong."); setFormStatus("error"); return; }
       if (json.experience) { setExperiences(p => [json.experience!, ...p]); setActive(0); } else { await fetchExperiences(); }
@@ -209,8 +209,8 @@ export function CustomerExperiencesSection() {
     } catch { setFormError("Network error."); setFormStatus("error"); }
   }
 
-  const current    = experiences[active];
-  const total      = experiences.length;
+  const current = experiences[active];
+  const total = experiences.length;
   const indexLabel = total > 0 ? String(active + 1).padStart(2, "0") : "00";
 
   /* ── success panel ────────────────────────────────────────────── */
@@ -231,23 +231,22 @@ export function CustomerExperiencesSection() {
       <div className="relative z-10 mx-auto w-full max-w-[clamp(20rem,92vw,48rem)] py-[clamp(0.5rem,2vh,2rem)]">
 
         {/* section header */}
-        <header className="mb-[clamp(2rem,4vh,3rem)] flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="text-center sm:text-left">
+        <header className="mb-[clamp(2rem,4vh,3rem)]">
+          <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
             <p className="text-clamp-small mb-2 font-semibold tracking-[0.25em] text-ternary uppercase">Customer Experiences</p>
             <h2 className="font-heading text-clamp-h2 font-bold text-white">What partners say</h2>
             <p className="text-clamp-body mt-3 max-w-xl text-white/65">
               Real stories from teams we work with. Add yours to share how KEDANTRA helped your project.
             </p>
-          </div>
 
-          <Dialog open={dialogOpen} onOpenChange={onOpenChange}>
-            <DialogTrigger asChild>
-              <button type="button" onClick={openDialog}
-                className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors hover:border-hover hover:bg-hover/20 hover:text-white sm:mx-0"
-                aria-label="Add customer experience">
-                <Plus className="size-5" strokeWidth={1.75} />
-              </button>
-            </DialogTrigger>
+            <Dialog open={dialogOpen} onOpenChange={onOpenChange}>
+              <DialogTrigger asChild>
+                <button type="button" onClick={openDialog}
+                  className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest text-white/70 transition-all duration-300 hover:border-white/25 hover:text-white active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.02)]"
+                  aria-label="Add customer experience">
+                  <Plus className="size-3.5" strokeWidth={2} /> Add experience
+                </button>
+              </DialogTrigger>
 
             {/*
               ╔══════════════════════════════════════════════════════╗
@@ -363,6 +362,7 @@ export function CustomerExperiencesSection() {
 
             </DialogContent>
           </Dialog>
+          </div>
         </header>
 
         {/* carousel body */}
