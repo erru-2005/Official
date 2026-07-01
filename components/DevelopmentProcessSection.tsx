@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Calendar,
   Code,
@@ -10,6 +11,7 @@ import {
 import RadialOrbitalTimeline, {
   type TimelineItem,
 } from "@/components/ui/radial-orbital-timeline";
+import { DevelopmentPipeline } from "@/components/DevelopmentPipeline";
 
 const developmentTimeline: TimelineItem[] = [
   {
@@ -75,23 +77,44 @@ const developmentTimeline: TimelineItem[] = [
 ];
 
 export function DevelopmentProcessSection() {
+  const [timelineActiveNodeId, setTimelineActiveNodeId] = useState<number | null>(null);
+  const [pipelineActiveNodeId, setPipelineActiveNodeId] = useState<number | null>(null);
+
   return (
     <section
       id="process"
-      className="section-full bg-transparent relative flex flex-col"
+      className="h-screen max-h-[100vh] min-h-[580px] bg-transparent relative flex flex-col justify-between overflow-hidden pt-[clamp(1rem,3vh,2rem)] pb-14"
     >
-      <header className="relative z-20 shrink-0 px-[clamp(1.25rem,4vw,3.5rem)] pt-[clamp(1.5rem,4vh,3rem)] pb-[clamp(0.25rem,1vh,0.75rem)] text-center">
-        <p className="text-clamp-small mb-2 font-semibold tracking-[0.25em] text-white/50 uppercase">
+      <header className="relative z-20 shrink-0 px-4 text-center">
+        <p className="text-clamp-small mb-1 font-semibold tracking-[0.25em] text-white/50 uppercase">
           How We Deliver
         </p>
-        <h2 className="font-heading text-clamp-h2 font-bold text-white">
+        <h2 className="font-heading text-clamp-h2 font-bold text-white leading-tight">
           Iterative Development Process
         </h2>
-       
       </header>
 
-      <div className="relative min-h-0 flex-1 px-[clamp(0.5rem,2vw,1rem)] pb-[clamp(0.5rem,2vw,1rem)]">
-        <RadialOrbitalTimeline timelineData={developmentTimeline} />
+      {/* Middle Container for the Orbital Circle */}
+      <div className="relative flex-1 flex items-center justify-center px-4 min-h-0 z-30">
+        <div className="w-full max-w-xl h-[clamp(280px,58vh,520px)] flex items-center justify-center relative -translate-y-8 md:translate-y-0">
+          <RadialOrbitalTimeline 
+            timelineData={developmentTimeline} 
+            activeNodeId={timelineActiveNodeId}
+            setActiveNodeId={setTimelineActiveNodeId}
+            pipelineActiveNodeId={pipelineActiveNodeId}
+            className="bg-transparent"
+          />
+        </div>
+      </div>
+
+      {/* Bottom Container for the Pipeline Stepper Marquee */}
+      <div className="w-full shrink-0 z-10">
+        <DevelopmentPipeline 
+          timelineData={developmentTimeline} 
+          activeNodeId={pipelineActiveNodeId} 
+          setActiveNodeId={setPipelineActiveNodeId} 
+          isTimelinePopupOpen={timelineActiveNodeId !== null}
+        />
       </div>
     </section>
   );
